@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 %}
+{% load socialaccount %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% block content %}
+
+
+<body>
+    <h1>UVA Reportify Site Admin Home</h1>
+
+    <div>
+      {% if user.is_authenticated %}
+          <p>You are signed in as a SITE ADMIN: {{ user.username }}</p>
+
+        {% endif %}
+    </div>
+    <div style="margin-top: 20px">
+
+        {% if all_reports %}
+            <h3 style="margin-bottom: 20px; margin-top: 40px">View Submitted Reports</h3>
+
+             <div class="accordion" id="reportAccordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingUnresolved">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Unresolved Reports
+                  </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingUnresolved" data-bs-parent="#reportAccordion">
+                  <div class="accordion-body">
+                      <table class="table table-hover">
+                        <tr>
+                            <th>Report Number</th>
+                            <th>User</th>
+                            <th>Report Status</th>
+                            <th>Summary</th>
+                            <th>View Submission</th>
+                            <th>Administrator Notes</th>
+                        </tr>
+                        {% for report in unresolved_reports %}
+                                <tr>
+                                    <td>{{ report.id }}</td>
+                                    <td>{{ report.username }}</td>
+                                    <td>
+                                        {% if report.status == 'new' %}
+                                            New
+                                        {% elif report.status == 'in_progress' %}
+                                            In Progress
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ report }}</td>
+                                    <td>
+                                        <a href="{% url "login:submission" report.id %}">
+                                            <button class="btn btn-outline-primary">
+                                                View submission
+                                            </button>
+                                        </a>
+                                    </td>
+                                     <td>
+                                        <form method="post" action="{% url 'login:update_notes' %}" class="notes-form">
+                                            {% csrf_token %}
+                                            <div class="flex-container">
+                                                <input type="hidden" name="report_id" value="{{ report.id }}">
+                                                <textarea class="form-control editable-notes" name="notes" rows="3">{{ report.notes }}</textarea>
+                                                <button type="submit" class="btn btn-outline-success btn-sm mt-2" style="width: 100%">Save</button>
+                                            </div>
+                                        </form>
+
+                                    </td>
+                                </tr>
+                        {% endfor %}
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingResolved">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    Resolved Reports
+                  </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingResolved" data-bs-parent="#reportAccordion">
+                  <div class="accordion-body">
+                      <table class="table table-hover">
+                        <tr>
+                            <th>Report Number</th>
+                            <th>User</th>
+                            <th>Report Status</th>
+                            <th>Summary</th>
+                            <th>View Submission</th>
+                            <th>Administrator Notes</th>
+                        </tr>
+                        {% for report in resolved_reports %}
+                                <tr>
+                                    <td>{{ report.id }}</td>
+                                    <td>{{ report.username }}</td>
+                                    <td>
+                                        {% if report.status == 'new' %}
+                                            New
+                                        {% elif report.status == 'in_progress' %}
+                                            In Progress
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ report }}</td>
+                                    <td>
+                                        <a href="{% url "login:submission" report.id %}">
+                                            <button class="btn btn-outline-primary">
+                                                View submission
+                                            </button>
+                                        </a>
+                                    </td>
+                                     <td>
+                                        <form method="post" action="{% url 'login:update_notes' %}" class="notes-form">
+                                            {% csrf_token %}
+                                            <div class="flex-container">
+                                                <input type="hidden" name="report_id" value="{{ report.id }}">
+                                                <textarea class="form-control editable-notes" name="notes" rows="3">{{ report.notes }}</textarea>
+                                                <button type="submit" class="btn btn-outline-success btn-sm mt-2" style="width: 100%">Save</button>
+                                            </div>
+                                        </form>
+
+                                    </td>
+                                </tr>
+                        {% endfor %}
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+        {% else %}
+            <p>No new reports are available.</p>
+        {% endif %}
+    </div>
+
+</body>
+{% endblock %}
+

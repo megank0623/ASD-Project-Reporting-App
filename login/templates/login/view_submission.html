@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 %}
+{% load socialaccount %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% block content %}
+
+<body>
+<div class="container my-5">
+    <h1 class="text-center">View Report Submission</h1>
+    <p class="text-center"><strong>Submitted by:</strong> {{ report.username }}</p>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <th scope="row"><strong>Status</strong></th>
+                    <td>
+                        {% if report.status == 'new' %}
+                        New
+                        {% elif report.status == 'in_progress' %}
+                        In Progress
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><strong>Incident Type</strong></th>
+                    <td>
+                        {% if report.incident_type == "1" %}
+                        Security Breach
+                        {% elif report.incident_type == "2" %}
+                        Physical Altercation
+                        {% elif report.incident_type == "3" %}
+                        Theft or Vandalism
+                        {% elif report.incident_type == "4" %}
+                        Harassment or Discrimination
+                        {% elif report.incident_type == "5" %}
+                        Accident or Injury
+                        {% elif report.incident_type == "6" %}
+                        Medical Emergency
+                        {% elif report.incident_type == "7" %}
+                        Fire or Hazardous Materials Incident
+                        {% elif report.incident_type == "8" %}
+                        Cybersecurity Incident
+                        {% elif report.incident_type == "9" %}
+                        Missing Person
+                        {% elif report.incident_type == "10" %}
+                        Suspicious Activity
+                        {% else %}
+                        Unknown
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><strong>Resolved</strong></th>
+                    <td>{{ report.resolved | yesno:"Yes,No" }}</td>
+                </tr>
+                <tr>
+                    <th scope="row"><strong>Description</strong></th>
+                    <td>{{ report.description }}</td>
+                </tr>
+                <tr>
+                    <th scope="row"><strong>Location</strong></th>
+                    <td>{{ report.location }}</td>
+                </tr>
+                <tr>
+                    <th scope="row"><strong>Submission Date</strong></th>
+                    <td>{{ report.submission_date }}</td>
+                </tr>
+                {% if report.images %}
+                <tr>
+                    <th scope="row"><strong>Image</strong></th>
+                    <td><img src="{{ report.images.url }}" width="400" alt="file submitted with the report"></td>
+                </tr>
+                {% endif %}
+                {% if report.videos %}
+                <tr>
+                    <th scope="row"><strong>File</strong></th>
+                    <td><video controls width="400"><source src="{{ report.videos.url }}" type="video/mp4">Your browser does not support the video tag.</video></td>
+                </tr>
+                {% endif %}
+                </tbody>
+            </table>
+            {% if is_admin and not report.resolved %}
+            <div class="text-center mb-4">
+                <a href="{% url 'login:resolve_report' report.id %}" class="btn btn-primary">
+                    Resolve Report
+                </a>
+            </div>
+            {% endif %}
+            <div class="text-center">
+                <a href="{% url 'login:home' %}" class="btn btn-primary">
+                    Return to home screen
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+{% endblock %}
